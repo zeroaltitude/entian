@@ -302,7 +302,7 @@ def draw_line(draw, character_arr):
 
 
 def char_capitalize(canvas_draw):
-    canvas_draw.point((DOTS[12][0], DOTS[12][1]), fill=CAPDOTCOLOR)
+    canvas_draw.point((DOTS[8][0], DOTS[8][1]), fill=CAPDOTCOLOR)
 
 
 def append_output(character_arr, offset_x, offset_y, canvas_draw, should_capitalize=False):
@@ -323,7 +323,10 @@ def loop_glyphs(word, card, canvas_draw=None, offset_y_index=0):
     offset_y = page_margin_y + (offset_y_index * (SIZE + vertical_line_margin))
     for i, char_ in enumerate(word):
         print("rotate %s with card %s" % (char_, card))
-        newchar, capitalize = char_to_tuple_rotated(char_, card)
+        if char_.isalpha():
+            newchar, capitalize = char_to_tuple_rotated(char_, card)
+        else:
+            newchar, capitalize = char_, False
         print("printing character (%s) %s" % (i, newchar))
         if newchar not in CHARS_ARS:
             draw_dots(canvas_draw, offset_x, offset_y)
