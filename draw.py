@@ -7,8 +7,27 @@ from PIL import Image, ImageDraw
 MODE = "RGBA"
 BGCOLOR = "#FFFFFF"
 DOTCOLOR = "#ddd"
+CAPDOTCOLOR = "#f00"
 LINECOLOR = "#111111"
 DARK = "#000000"
+NEGABET = "*jkhinolmbcafgdezxyrspqvwtu"
+# rotations
+# scorpio   Fixed water 2 * 5       10
+# sagittar  Mutable fire 3 * 6      18
+# capricor  Cardinal earth 1 * 4    4
+# aquarius  Fixed air 4 * 5         20
+# pisces    Mutable water 2 * 6     12
+# aries     cardinal fire 1 * 3     3
+# taurus    Fixed earth 3 * 4       12
+# gemini    Mutable air 5 * 6       30
+# cander    Cardinal water 1 * 2    2
+# leo       Fixed fire 2 * 3        6
+# virgo     Mutable earth 6 * 4     24
+# libra     Cardinal air 1 * 5      5
+ROTS = [10, 18, 4, 20,
+        12, 3, 12, 30,
+        2, 6, 24, 5]
+
 CHARS_ARS = {
     '0': [
         [[1, 0], [3, 0]],
@@ -55,60 +74,19 @@ CHARS_ARS = {
 
     ],
     '8': [
-
+        [[0, 0], [4, 0]],
+        [[0, 0], [0, 4]],
+        [[4, 0], [4, 4]],
+        [[0, 4], [4, 4]],
+        [[0, 2], [4, 2]],
     ],
     '9': [
         [[0, 0], [4, 0]],
         [[4, 0], [4, 4]],
         [[0, 0], [0, 2]],
         [[0, 2], [4, 2]],
-        [[0, 4], [4, 4]],
+        [[2, 4], [4, 4]],
     ],
-    'A': [],
-    'B': [],
-    'C': [
-        [[0, 0], [4, 0]],
-        [[0, 0], [0, 4]],
-        [[0, 4], [4, 4]],
-    ],
-    'D': [],
-    'E': [
-        [[0, 0], [4, 0]],
-        [[0, 2], [4, 2]],
-        [[0, 4], [4, 4]],
-        [[0, 0], [0, 4]],
-    ],
-    'F': [],
-    'G': [],
-    'H': [],
-    'I': [],
-    'J': [],
-    'K': [],
-    'L': [],
-    'M': [],
-    'N': [],
-    'O': [],
-    'P': [],
-    'Q': [],
-    'R': [],
-    'S': [],
-    'T': [],
-    'U': [],
-    'V': [],
-    'W': [
-        [[0, 0], [0, 4]],
-        [[2, 2], [2, 4]],
-        [[4, 0], [4, 4]],
-        [[0, 4], [4, 4]],
-    ],
-    'X': [],
-    'Y': [
-        [[1, 0], [2, 2]],
-        [[4, 0], [2, 2]],
-        [[2, 2], [2, 4]],
-        [[0, 0], [4, 0]],
-    ],
-    'Z': [],
     'a': [
         [[4, 0], [4, 4]],
         [[0, 4], [4, 4]],
@@ -273,6 +251,33 @@ CHARS_ARS = {
 }
 
 
+def char_to_negabet(char_):
+    capitalize = False
+    if char_.upper() == char_:
+        capitalize = True
+    print("char is %s (%s)" % (char_, capitalize))
+    ordin = ord(char_.upper()) - 64
+    print("ord %s" % ordin)
+    negord = NEGABET[ordin]
+    print("char %s capitalize? %s now translated to %s (%s)" % (char_, capitalize, negord, ordin))
+    return ordin, negord, capitalize
+
+
+def card_tate(ordin, card):
+    newordin = (ordin + ROTS[card]) % 26
+    char_ = NEGABET[newordin]
+    print("%s (%s) using %s (%s) now %s" % (ordin, NEGABET[ordin], card, newordin, char_))
+    return char_
+
+
+def char_to_tuple_rotated(char_, card):
+    ordin, newchar, capitalize = char_to_negabet(char_)
+    print("%s translated to %s, %s" % (char_, newchar, capitalize))
+    newerchar = card_tate(ordin, card)
+    print("%s translated to %s" % (newchar, newerchar))
+    return newerchar, capitalize
+
+
 def draw_dots(draw, offset_x=0, offset_y=0):
     DOTS.clear()
     for y in range(GRID):
@@ -296,35 +301,46 @@ def draw_line(draw, character_arr):
     draw.line(xy, fill=LINECOLOR, width=1, joint=None)
 
 
-def append_output(character_arr, offset_x, offset_y, canvas_draw):
+def char_capitalize(canvas_draw):
+    canvas_draw.point((DOTS[12][0], DOTS[12][1]), fill=CAPDOTCOLOR)
+
+
+def append_output(character_arr, offset_x, offset_y, canvas_draw, should_capitalize=False):
     draw_dots(canvas_draw, offset_x, offset_y)
+    if should_capitalize:
+        char_capitalize(canvas_draw)
     # print("snake chars to draw is: %s" % snake_chars)
     draw_line(canvas_draw, character_arr)
 
 
-def loop_glyphs(val, canvas_draw=None, offset_y_index=0):
+def loop_glyphs(word, card, canvas_draw=None, offset_y_index=0):
     page_margin_x = 2
     page_margin_y = 2
     vertical_line_margin = 10
     horizontal_char_margin = 20
     horizontal_glyph_part_margin = 10
-    offset_x = 0
+    offset_x = page_margin_x
     offset_y = page_margin_y + (offset_y_index * (SIZE + vertical_line_margin))
-    for i, char_ in enumerate(val):
-        print("printing character (%s) %s" % (i, char_))
-        for character_arr in CHARS_ARS[char_]:
-            print("printing glyph")
-            append_output(character_arr, offset_x, offset_y, canvas_draw)
-            offset_x += page_margin_x + (SIZE + horizontal_glyph_part_margin)
+    for i, char_ in enumerate(word):
+        print("rotate %s with card %s" % (char_, card))
+        newchar, capitalize = char_to_tuple_rotated(char_, card)
+        print("printing character (%s) %s" % (i, newchar))
+        if newchar not in CHARS_ARS:
+            draw_dots(canvas_draw, offset_x, offset_y)
+        else:
+            for character_arr in CHARS_ARS[newchar]:
+                print("printing glyph")
+                append_output(character_arr, offset_x, offset_y, canvas_draw, should_capitalize=capitalize)
+                offset_x += page_margin_x + (SIZE + horizontal_glyph_part_margin)
         offset_x += horizontal_char_margin
 
 
-def draw_main(words, can_x=0, can_y=0):
+def draw_main(sentence, card, can_x=0, can_y=0):
     can_im = init_image(MODE, [can_x, can_y], BGCOLOR)
     canvas_draw = get_draw(can_im)
-    for i, word in enumerate(words.split()):
+    for i, word in enumerate(sentence.split()):
         print("drawing word (%s) %s" % (i, word))
-        loop_glyphs(word, canvas_draw=canvas_draw, offset_y_index=i)
+        loop_glyphs(word, card, canvas_draw=canvas_draw, offset_y_index=i)
     can_im.save("canvas.png", "PNG")
 
 
@@ -340,17 +356,17 @@ def get_draw(im):
     return ImageDraw.Draw(im)
 
 
-def main(word, can_x, can_y):
-    draw_main(word, can_x=can_x, can_y=can_y)
+def main(sentence, card, can_x, can_y):
+    draw_main(sentence, card, can_x=can_x, can_y=can_y)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        raise Exception("draw.py word can_x(0|255) can_y(0|255)")
+    if len(sys.argv) != 5:
+        raise Exception("draw.py word card(0|11) can_x(0|255) can_y(0|255)")
 
-    word, can_x, can_y = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+    sentence, card, can_x, can_y = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
     GRID = 5
     DISTANCE = 3
     SIZE = (GRID - 1) * (DISTANCE) + 1
     DOTS = []
-    main(word, can_x, can_y)
+    main(sentence, card, can_x, can_y)
