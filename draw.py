@@ -12,21 +12,21 @@ LINECOLOR = "#111111"
 DARK = "#000000"
 NEGABET = "*jkhinolmbcafgdezxyrspqvwtu"
 # rotations
-# scorpio   Fixed water 2 * 5       10
-# sagittar  Mutable fire 3 * 6      18
-# capricor  Cardinal earth 1 * 4    4
-# aquarius  Fixed air 4 * 5         20
-# pisces    Mutable water 2 * 6     12
-# aries     cardinal fire 1 * 3     3
-# taurus    Fixed earth 3 * 4       12
+# scorpio   Fixed water 4 * 5       20
+# sagittar  Mutable fire 2 * 6      12
+# capricor  Cardinal earth 1 * 3    3
+# aquarius  Fixed air 3 * 5         15
+# pisces    Mutable water 4 * 6     24
+# aries     cardinal fire 1 * 2     2
+# taurus    Fixed earth 3 * 2       6
 # gemini    Mutable air 5 * 6       30
-# cander    Cardinal water 1 * 2    2
-# leo       Fixed fire 2 * 3        6
-# virgo     Mutable earth 6 * 4     24
+# cander    Cardinal water 1 * 4    4
+# leo       Fixed fire 2 * 4        8
+# virgo     Mutable earth 6 * 3     18
 # libra     Cardinal air 1 * 5      5
-ROTS = [10, 18, 4, 20,
-        12, 3, 12, 30,
-        2, 6, 24, 5]
+ROTS = [20, 12, 3, 15,
+        24, 2, 6, 30,
+        4, 8, 18, 5]
 
 CHARS_ARS = {
     '0': [
