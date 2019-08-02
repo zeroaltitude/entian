@@ -10,7 +10,7 @@ DOTCOLOR = "#ddd"
 CAPDOTCOLOR = "#f00"
 LINECOLOR = "#111111"
 DARK = "#000000"
-NEGABET = "*jkhinolmbcafgdezxyrspqvwtu"
+NEGABET = "jkhinolmbcafgdezxyrspqvwtu"
 # rotations
 # scorpio   Fixed water 4 * 5       20
 # sagittar  Mutable fire 2 * 6      12
@@ -256,7 +256,7 @@ def char_to_negabet(char_):
     if char_.upper() == char_:
         capitalize = True
     print("char is %s (%s)" % (char_, capitalize))
-    ordin = ord(char_.upper()) - 64
+    ordin = ord(char_.upper()) - 65
     print("ord %s" % ordin)
     negord = NEGABET[ordin]
     print("char %s capitalize? %s now translated to %s (%s)" % (char_, capitalize, negord, ordin))
@@ -315,7 +315,7 @@ def append_output(character_arr, offset_x, offset_y, canvas_draw, should_capital
 
 def loop_glyphs(word, card, canvas_draw=None, offset_y_index=0):
     page_margin_x = 2
-    page_margin_y = 2
+    page_margin_y = 22
     vertical_line_margin = 10
     horizontal_char_margin = 20
     horizontal_glyph_part_margin = 10
@@ -329,6 +329,7 @@ def loop_glyphs(word, card, canvas_draw=None, offset_y_index=0):
             newchar, capitalize = char_, False
         print("printing character (%s) %s" % (i, newchar))
         if newchar not in CHARS_ARS:
+            print("just dots")
             draw_dots(canvas_draw, offset_x, offset_y)
         else:
             for character_arr in CHARS_ARS[newchar]:
